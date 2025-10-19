@@ -13,11 +13,12 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../auth/auth-context";
+import { routes, unauthenticatedRoutes } from "../common/constants/routes";
 
 export default function Header() {
-  console.log("Hello");
-  const pages = ["Products", "Pricing", "Blog"];
+  const isAuthentiated = useContext(AuthContext);
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
@@ -28,6 +29,8 @@ export default function Header() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
+  const pages = isAuthentiated ? routes : unauthenticatedRoutes;
 
   return (
     <AppBar position="static">
@@ -82,8 +85,10 @@ export default function Header() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    {page.title}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -112,16 +117,15 @@ export default function Header() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.title}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.title}
               </Button>
             ))}
           </Box>
-
-          <Settings />
+          {isAuthentiated && <Settings />}
         </Toolbar>
       </Container>
     </AppBar>
@@ -134,8 +138,6 @@ const Settings = () => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
-
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -164,11 +166,9 @@ const Settings = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
-            <Typography sx={{ textAlign: "center" }}>{setting}</Typography>
-          </MenuItem>
-        ))}
+        <MenuItem key="Logout" onClick={handleCloseUserMenu}>
+          <Typography sx={{ textAlign: "center" }}>Logout</Typography>
+        </MenuItem>
       </Menu>
     </Box>
   );
