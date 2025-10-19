@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const publicRoutes = ["/auth/login", "/auth/signup"];
+import { unauthenticatedRoutes } from "./app/common/constants/routes";
+import { AUTHENTICATION_COOKIE } from "./app/auth/auth-cookie";
 
 export function middleware(request: NextRequest) {
-  const auth = request.cookies.get("Authentication")?.value;
+  // Get cookie directly from the request
+  const authCookie = request.cookies.get(AUTHENTICATION_COOKIE)?.value;
 
+  const isAuthenticated = !!authCookie;
   if (
-    !auth &&
-    !publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+    !isAuthenticated &&
+    !unauthenticatedRoutes.some((route) =>
+      request.nextUrl.pathname.startsWith(route.path)
+    )
   ) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }

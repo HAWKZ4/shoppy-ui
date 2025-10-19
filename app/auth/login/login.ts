@@ -6,6 +6,7 @@ import { getErrorMessage } from "@/app/common/utils/errors";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
+import { AUTHENTICATION_COOKIE } from "../auth-cookie";
 
 export default async function login(_prevState: FormError, formData: FormData) {
   const res = await fetch(`${API_URL}/auth/login`, {
@@ -28,7 +29,7 @@ const setAuthCookie = async (response: Response) => {
     const token = setCookieHeader.split(";")[0].split("=")[1];
     const cookieStore = await cookies();
     cookieStore.set({
-      name: "Authentication",
+      name: AUTHENTICATION_COOKIE,
       value: token,
       secure: true,
       httpOnly: true,
