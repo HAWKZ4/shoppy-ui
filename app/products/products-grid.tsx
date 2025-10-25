@@ -4,9 +4,10 @@ import { Grid } from "@mui/material";
 import Product from "./product";
 import { Product as IProduct } from "./interfaces/product.interface";
 import { useEffect } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { API_URL } from "../common/constants/api";
 import revalidateProducts from "./actions/revalidate-products";
+import getAuthentication from "../auth/actions/get-authentication";
 
 interface ProductsGridProps {
   products: IProduct[];
@@ -14,11 +15,21 @@ interface ProductsGridProps {
 
 export default function ProductsGrid({ products }: ProductsGridProps) {
   useEffect(() => {
-    const socket = io(API_URL!);
+    let socket: Socket;
+    
+    const createSocket = async () => {
+      socket = io(API_URL!, {
+        auth: {
+          Authentication: await getAuthentication(),
+        },
+      });
 
-    socket.on("productUpdated", () => {
-      revalidateProducts();
-    });
+      socket.on("productUpdated", () => {
+        revalidateProducts();
+      });
+    };
+
+    createSocket();
 
     return () => {
       socket?.disconnect();

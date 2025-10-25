@@ -4,7 +4,7 @@ import "./globals.css";
 import Providers from "./Providers";
 import Header from "./header/header";
 import { Container, CssBaseline } from "@mui/material";
-import authenticated from "./auth/authenticated";
+import authenticated from "./auth/actions/authenticated";
 import { logout } from "./auth/logout";
 
 const geistSans = Geist({
